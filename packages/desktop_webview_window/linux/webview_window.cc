@@ -143,6 +143,11 @@ void WebviewWindow::SetApplicationNameForUserAgent(const std::string &app_name) 
   webkit_settings_set_user_agent(setting, (default_user_agent_ + app_name).c_str());
 }
 
+void WebviewWindow::SetUserAgent(const std::string &user_agent){
+   auto *setting = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(webview_));
+  webkit_settings_set_user_agent(setting,  app_name.c_str());
+}
+
 void WebviewWindow::Close() {
   gtk_window_close(GTK_WINDOW(window_));
 }

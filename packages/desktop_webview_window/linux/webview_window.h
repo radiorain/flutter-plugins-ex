@@ -31,6 +31,7 @@ class WebviewWindow {
   void Close();
 
   void SetApplicationNameForUserAgent(const std::string &app_name);
+  void SetUserAgent(const std::string &user_agent);
 
   void OnLoadChanged(WebKitLoadEvent load_event);
 
