@@ -4,7 +4,7 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
-set(PLUGIN_NAME "desktop_webview_window_plugin_ex")
+set(PLUGIN_NAME "desktop_webview_window_ex_plugin")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(WebKit REQUIRED IMPORTED_TARGET webkit2gtk-4.0)
