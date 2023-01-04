@@ -49,6 +49,9 @@ abstract class Webview {
   /// Append a string to the webview's user-agent.
   Future<void> setApplicationNameForUserAgent(String applicationName);
 
+  // Change webview`s user-agent
+  Future<void> setUserAgent(String userAgent);
+
   /// Navigate to the previous page in the history.
   Future<void> back();
 
@@ -70,7 +73,8 @@ abstract class Webview {
 
   void addOnWebMessageReceivedCallback(OnWebMessageReceivedCallback callback);
 
-  void removeOnWebMessageReceivedCallback(OnWebMessageReceivedCallback callback);
+  void removeOnWebMessageReceivedCallback(
+      OnWebMessageReceivedCallback callback);
 
   /// Close the web view window.
   void close();

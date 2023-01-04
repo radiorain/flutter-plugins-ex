@@ -145,7 +145,7 @@ void WebviewWindow::SetApplicationNameForUserAgent(const std::string &app_name) 
 
 void WebviewWindow::SetUserAgent(const std::string &user_agent){
    auto *setting = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(webview_));
-  webkit_settings_set_user_agent(setting,  app_name.c_str());
+  webkit_settings_set_user_agent(setting,  user_agent.c_str());
 }
 
 void WebviewWindow::Close() {
