@@ -266,16 +266,30 @@ class WebviewImpl extends Webview {
       "uri": uri.toString(),
     });
 
-    debugPrint("get Cookies is $result");
-    (result as List<dynamic>).map(
-      (e) {
-        debugPrint("${e.runtimeType}");
-        return e;
-      },
-    ).toList();
+    // debugPrint("get Cookies is $result");
+    // (result as List<dynamic>).map(
+    //   (e) {
+    //     debugPrint("${e.runtimeType}");
+    //     return e;
+    //   },
+    // ).toList();
 
     return (result as List<dynamic>)
         .map((e) => Map<String, String>.from(e))
         .toList();
+  }
+
+  @override
+  Future<List<Cookie>> getCookies(Uri uri) async {
+    final cookiesMap = await getCookiesMap(uri);
+
+    return cookiesMap.map((Map<String, String> cookieMap) {
+      final cookie = Cookie(cookieMap["name"]!, cookieMap["value"]!);
+
+      if (cookieMap.containsKey("expires")) {
+        cookie.expires = DateTime.parse(cookieMap["expires"]!);
+      }
+      return cookie;
+    }).toList();
   }
 }

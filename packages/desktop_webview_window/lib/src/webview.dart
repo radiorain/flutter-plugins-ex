@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -89,4 +90,5 @@ abstract class Webview {
   Future<String?> postWebMessageAsJson(String webMessage);
 
   Future<List<Map<String, String>>> getCookiesMap(Uri uri);
+  Future<List<Cookie>> getCookies(Uri uri);
 }
