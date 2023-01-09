@@ -48,6 +48,8 @@ class WebviewWindow {
 
   void EvaluateJavaScript(const char *java_script, FlMethodCall* call);
 
+  void GetCookies(const char *uri, FlMethodCall* call);
+
  private:
   FlMethodChannel *method_channel_;
   int64_t window_id_;

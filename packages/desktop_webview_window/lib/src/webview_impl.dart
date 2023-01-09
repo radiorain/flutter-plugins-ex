@@ -258,4 +258,24 @@ class WebviewImpl extends Webview {
       "webMessage": webMessage,
     });
   }
+
+  @override
+  Future<List<Map<String, String>>> getCookiesMap(Uri uri) async {
+    final result = await channel.invokeMethod("getCookies", {
+      "viewId": viewId,
+      "uri": uri.toString(),
+    });
+
+    debugPrint("get Cookies is $result");
+    (result as List<dynamic>).map(
+      (e) {
+        debugPrint("${e.runtimeType}");
+        return e;
+      },
+    ).toList();
+
+    return (result as List<dynamic>)
+        .map((e) => Map<String, String>.from(e))
+        .toList();
+  }
 }

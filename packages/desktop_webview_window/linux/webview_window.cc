@@ -5,8 +5,10 @@
 #include "webview_window.h"
 
 #include <utility>
+#include <stdio.h>
 
 #include "message_channel_plugin.h"
+
 
 namespace {
 
@@ -238,4 +240,91 @@ void WebviewWindow::EvaluateJavaScript(const char *java_script, FlMethodCall *ca
         g_object_unref(call);
       },
       g_object_ref(call));
+}
+
+FlValue* ConvertCookieToDartMap(SoupCookie* soup){
+//https://www.manpagez.com/html/libsoup-2.4/libsoup-2.4-2.72.0/SoupCookie.php
+
+  FlValue* mapObject = fl_value_new_map();
+  fl_value_set_take(mapObject, fl_value_new_string("name"), 
+                           fl_value_new_string(soup_cookie_get_name(soup)));
+
+  fl_value_set_take(mapObject, fl_value_new_string("value"), 
+                           fl_value_new_string(soup_cookie_get_value(soup)));
+
+  auto* expiresAt = soup_cookie_get_expires(soup);
+  if (expiresAt){
+  fl_value_set_take(mapObject, fl_value_new_string("expires"), 
+                           fl_value_new_string(
+                            soup_date_to_string(
+                            expiresAt
+                            ,SOUP_DATE_ISO8601_FULL)));
+  }
+
+  return mapObject;
+
+}
+
+
+void WebviewWindow::GetCookies(const char *uri, FlMethodCall* call){
+  // if (webview_==nullptr){
+  //   fl_method_call_respond_error(call, "!!!failed to get cookies.", "ERROR MESSAGE", nullptr, nullptr);
+
+  //   return;
+  // }
+  auto *context = webkit_web_view_get_context(WEBKIT_WEB_VIEW(webview_));
+  // if (context==nullptr){
+  //   fl_method_call_respond_error(call, "!!!failed to get cookies.", "ERROR context", nullptr, nullptr);
+  //   return;
+  // }
+  auto *website_data_manager = webkit_web_context_get_website_data_manager(context);
+  // if (website_data_manager==nullptr){
+  //   fl_method_call_respond_error(call, "!!!failed to get cookies.", "ERROR website_data_manager", nullptr, nullptr);
+  //   return;
+  // }
+  auto *cookie_manager = webkit_website_data_manager_get_cookie_manager(website_data_manager);
+  // if (cookie_manager==nullptr){
+  //   fl_method_call_respond_error(call, "!!!failed to get cookies.", "ERROR cookie_manager", nullptr, nullptr);
+  //   return;
+  // }
+  webkit_cookie_manager_get_cookies(cookie_manager, uri, nullptr,
+  [](GObject *object, GAsyncResult *result, gpointer user_data) {
+    auto *call = static_cast<FlMethodCall *>(user_data);
+
+   
+    GError *error = nullptr;
+    GList *list = webkit_cookie_manager_get_cookies_finish((WebKitCookieManager*)object, result, &error);
+
+    // fl_method_call_respond_error(call, "failed to get cookies.", "err", nullptr, nullptr);
+    // return;
+
+    if (!list){
+          fl_method_call_respond_error(call, "failed to get cookies.", error->message, nullptr, nullptr);
+          g_error_free(error);
+    }else {
+        //  fl_method_call_respond_error(call, "failed to get cookies.", "All good", nullptr, nullptr);
+        //  return;
+      GList* elem;
+      SoupCookie* item;
+      // fl_value
+      g_autoptr(FlValue) outList = fl_value_new_list();
+      for(elem = list; elem; elem = elem->next) {
+        item = (SoupCookie*)elem->data;
+        FlValue* newCookie = ConvertCookieToDartMap(item);
+        fl_value_append(outList, newCookie);
+      }
+      for(elem = list; elem; elem = elem->next) {
+        item = (SoupCookie*)elem->data;
+        soup_cookie_free(item);
+      }
+      //g_list_free(g_steal_pointer(&list));
+      fl_method_call_respond_success(call, outList, nullptr);
+
+
+
+    } // else
+
+    g_object_unref(call);
+
+  },g_object_ref(call) );
 }
